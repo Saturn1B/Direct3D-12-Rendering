@@ -2,15 +2,15 @@
 <Project>
   <ProjectOutputs>
     <ProjectOutput>
-      <FullPath>F:\DOCUMENTS\d3d12book\MyDemos\RenderingTest - Copie\x64\Debug\RenderingTest.exe</FullPath>
+      <FullPath>F:\DOCUMENTS\d3d12book\MyDemos\Direct3D-12-Rendering\x64\Debug\RenderingTest.exe</FullPath>
     </ProjectOutput>
   </ProjectOutputs>
   <ContentFiles>
     <ContentFile>
-      <FullPath>F:\DOCUMENTS\d3d12book\MyDemos\RenderingTest - Copie\x64\Debug\PixelShader.cso</FullPath>
+      <FullPath>F:\DOCUMENTS\d3d12book\MyDemos\Direct3D-12-Rendering\x64\Debug\PixelShader.cso</FullPath>
     </ContentFile>
     <ContentFile>
-      <FullPath>F:\DOCUMENTS\d3d12book\MyDemos\RenderingTest - Copie\x64\Debug\VertexShader.cso</FullPath>
+      <FullPath>F:\DOCUMENTS\d3d12book\MyDemos\Direct3D-12-Rendering\x64\Debug\VertexShader.cso</FullPath>
     </ContentFile>
   </ContentFiles>
   <SatelliteDlls />
