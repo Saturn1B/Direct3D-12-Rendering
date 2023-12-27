@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Transform.h"
+#include <Xinput.h>
 
 struct Vertex {
 	Vertex(float x, float y, float z, float r, float g, float b, float a) : pos(x, y, z), color(r, g, b, a) {}
@@ -10,6 +11,15 @@ struct Vertex {
 float rotationAngleX = 0.0f;
 float rotationAngleY = 0.0f;
 float rotationAngleZ = 0.0f;
+
+float cameraMoveSpeed = 0.1f;
+float cameraRotationSpeed = 0.00000008f;
+
+float xrot;
+float yrot;
+float zrot;
+
+Transform cameraTransform;
 
 int WINAPI WinMain(HINSTANCE hInstance,    //Main windows function
 	HINSTANCE hPrevInstance,
@@ -767,15 +777,24 @@ bool InitD3D()
 	XMStoreFloat4x4(&cameraProjMat, tmpMat);
 
 	// set starting camera state
-	cameraPosition = XMFLOAT4(0.0f, 2.0f, -4.0f, 0.0f);
-	cameraTarget = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
-	cameraUp = XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f);
+	//cameraPosition = XMFLOAT4(0.0f, 2.0f, -4.0f, 0.0f);
+	//cameraTarget = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
+	//cameraUp = XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f);
+
+	// set starting camera state using Transform class
+	Transform cameraTransform;
+	cameraTransform.SetPosition(0.0f, 2.0f, -4.0f);
+	cameraTransform.SetRotation(0.0f, 0.0f, 0.0f);
 
 	// build view matrix
-	XMVECTOR cPos = XMLoadFloat4(&cameraPosition);
-	XMVECTOR cTarg = XMLoadFloat4(&cameraTarget);
-	XMVECTOR cUp = XMLoadFloat4(&cameraUp);
-	tmpMat = XMMatrixLookAtLH(cPos, cTarg, cUp);
+	//XMVECTOR cPos = XMLoadFloat4(&cameraPosition);
+	//XMVECTOR cTarg = XMLoadFloat4(&cameraTarget);
+	//XMVECTOR cUp = XMLoadFloat4(&cameraUp);
+	//tmpMat = XMMatrixLookAtLH(cPos, cTarg, cUp);
+	XMVECTOR cPos = cameraTransform.GetPosition();
+	XMVECTOR cTarg = cameraTransform.GetForwardVector();
+	XMVECTOR cUp = cameraTransform.GetUpVector();
+	tmpMat = XMMatrixLookAtLH(cPos, cPos + cTarg, cUp);
 	XMStoreFloat4x4(&cameraViewMat, tmpMat);
 
 	// set starting cubes position using Transform class
@@ -793,20 +812,53 @@ void Update()
 {
 	// update app logic, such as moving the camera or figuring out what objects are in view
 
+	// Handle user input for camera movement
+	if (GetAsyncKeyState('W') & 0x8000) {
+		cameraTransform.MoveRelative(0.0f, 0.0f, cameraMoveSpeed);
+	}
+	if (GetAsyncKeyState('S') & 0x8000) {
+		cameraTransform.MoveRelative(0.0f, 0.0f, -cameraMoveSpeed);
+	}
+	if (GetAsyncKeyState('A') & 0x8000) {
+		cameraTransform.MoveRelative(-cameraMoveSpeed, 0.0f, 0.0f);
+	}
+	if (GetAsyncKeyState('D') & 0x8000) {
+		cameraTransform.MoveRelative(cameraMoveSpeed, 0.0f, 0.0f);
+	}
+	if (GetAsyncKeyState(VK_LSHIFT) & 0x8000) {
+		cameraTransform.MoveRelative(0.0f, -cameraMoveSpeed, 0.0f);
+	}
+	if (GetAsyncKeyState(VK_SPACE) & 0x8000) {
+		cameraTransform.MoveRelative(0.0f, cameraMoveSpeed, 0.0f);
+	}
+
+	rotationAngleY += cameraRotationSpeed * static_cast<float>(GetAsyncKeyState(VK_RIGHT) & 0x8001) - cameraRotationSpeed * static_cast<float>(GetAsyncKeyState(VK_LEFT) & 0x8001);
+	rotationAngleX += cameraRotationSpeed * static_cast<float>(GetAsyncKeyState(VK_DOWN) & 0x8001) - cameraRotationSpeed * static_cast<float>(GetAsyncKeyState(VK_UP) & 0x8001);
+
+	cameraTransform.SetRotation(rotationAngleX, rotationAngleY, 0.0f);
+
+	// Update camera view matrix
+	XMVECTOR cPos = cameraTransform.GetPosition();
+	XMVECTOR cForward = cameraTransform.GetForwardVector();
+	XMVECTOR cUp = cameraTransform.GetUpVector();
+	XMVECTOR cTarg = cPos + cForward;
+	XMMATRIX viewMat1 = XMMatrixLookAtLH(cPos, cTarg, cUp);
+	XMStoreFloat4x4(&cameraViewMat, viewMat1);
+
 	// Increment rotation angles over time
-	rotationAngleX += 0.0001f;
-	rotationAngleY += 0.0001f;
-	rotationAngleZ += 0.0001f;
+	xrot += 0.0001f;
+	yrot += 0.0001f;
+	zrot += 0.0001f;
 
 	// create rotation matrices
-	XMMATRIX rotXMat = XMMatrixRotationX(rotationAngleX);
-	XMMATRIX rotYMat = XMMatrixRotationY(rotationAngleY);
-	XMMATRIX rotZMat = XMMatrixRotationZ(rotationAngleZ);
+	//XMMATRIX rotXMat = XMMatrixRotationX(rotationAngleX);
+	//XMMATRIX rotYMat = XMMatrixRotationY(rotationAngleY);
+	//XMMATRIX rotZMat = XMMatrixRotationZ(rotationAngleZ);
 
 	// Update cube1's transformation using Transform class
 	Transform cube1Transform;
-	cube1Transform.SetRotation(rotationAngleX, rotationAngleY, rotationAngleZ);
-	cube1Transform.SetPosition(cube1Position.x, cube1Position.y, cube1Position.z);
+	cube1Transform.SetRotation(xrot, yrot, zrot);
+	cube1Transform.SetPosition(cube1Position.x, cube1Position.y, 5 + zrot);
 	//cube1Transform.SetScale(rotationAngleX, rotationAngleY, rotationAngleZ);
 
 	// Get the world matrix from the Transform class
