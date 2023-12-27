@@ -147,9 +147,11 @@
   <ItemGroup>
     <ClInclude Include="d3dx12.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="Transform.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Transform.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="PixelShader.hlsl">

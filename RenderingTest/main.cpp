@@ -1,10 +1,15 @@
 #include "stdafx.h"
+#include "Transform.h"
 
 struct Vertex {
 	Vertex(float x, float y, float z, float r, float g, float b, float a) : pos(x, y, z), color(r, g, b, a) {}
 	XMFLOAT3 pos;
 	XMFLOAT4 color;
 };
+
+float rotationAngleX = 0.0f;
+float rotationAngleY = 0.0f;
+float rotationAngleZ = 0.0f;
 
 int WINAPI WinMain(HINSTANCE hInstance,    //Main windows function
 	HINSTANCE hPrevInstance,
@@ -773,14 +778,13 @@ bool InitD3D()
 	tmpMat = XMMatrixLookAtLH(cPos, cTarg, cUp);
 	XMStoreFloat4x4(&cameraViewMat, tmpMat);
 
-	// set starting cubes position
+	// set starting cubes position using Transform class
 	// first cube
-	cube1Position = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f); // set cube 1's position
-	XMVECTOR posVec = XMLoadFloat4(&cube1Position); // create xmvector for cube1's position
+	Transform cube1Transform;
+	cube1Transform.SetPosition(0.0f, 0.0f, 0.0f);
 
-	tmpMat = XMMatrixTranslationFromVector(posVec); // create translation matrix from cube1's position vector
-	XMStoreFloat4x4(&cube1RotMat, XMMatrixIdentity()); // initialize cube1's rotation matrix to identity matrix
-	XMStoreFloat4x4(&cube1WorldMat, tmpMat); // store cube1's world matrix
+	// Get the world matrix from the Transform class
+	XMMATRIX cube1WorldMat = cube1Transform.GetWorldMatrix();
 
 	return true;
 }
@@ -789,20 +793,24 @@ void Update()
 {
 	// update app logic, such as moving the camera or figuring out what objects are in view
 
+	// Increment rotation angles over time
+	rotationAngleX += 0.0001f;
+	rotationAngleY += 0.0001f;
+	rotationAngleZ += 0.0001f;
+
 	// create rotation matrices
-	XMMATRIX rotXMat = XMMatrixRotationX(0.0001f);
-	XMMATRIX rotYMat = XMMatrixRotationY(0.0002f);
-	XMMATRIX rotZMat = XMMatrixRotationZ(0.0003f);
+	XMMATRIX rotXMat = XMMatrixRotationX(rotationAngleX);
+	XMMATRIX rotYMat = XMMatrixRotationY(rotationAngleY);
+	XMMATRIX rotZMat = XMMatrixRotationZ(rotationAngleZ);
 
-	// add rotation to cube1's rotation matrix and store it
-	XMMATRIX rotMat = XMLoadFloat4x4(&cube1RotMat) * rotXMat * rotYMat * rotZMat;
-	XMStoreFloat4x4(&cube1RotMat, rotMat);
+	// Update cube1's transformation using Transform class
+	Transform cube1Transform;
+	cube1Transform.SetRotation(rotationAngleX, rotationAngleY, rotationAngleZ);
+	cube1Transform.SetPosition(cube1Position.x, cube1Position.y, cube1Position.z);
+	//cube1Transform.SetScale(rotationAngleX, rotationAngleY, rotationAngleZ);
 
-	// create translation matrix for cube 1 from cube 1's position vector
-	XMMATRIX translationMat = XMMatrixTranslationFromVector(XMLoadFloat4(&cube1Position));
-
-	// create cube1's world matrix by first rotating the cube, then positioning the rotated cube
-	XMMATRIX worldMat = rotMat * translationMat;
+	// Get the world matrix from the Transform class
+	XMMATRIX worldMat = cube1Transform.GetWorldMatrix();
 
 	// store cube1's world matrix
 	XMStoreFloat4x4(&cube1WorldMat, worldMat);
