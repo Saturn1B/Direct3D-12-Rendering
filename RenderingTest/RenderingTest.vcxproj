@@ -146,12 +146,19 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="d3dx12.h" />
-    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="GameLogic.h" />
+    <ClInclude Include="main.h" />
+    <ClInclude Include="Renderer.h" />
     <ClInclude Include="Transform.h" />
+    <ClInclude Include="Vertex.h" />
+    <ClInclude Include="WindowManager.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="GameLogic.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Transform.cpp" />
+    <ClCompile Include="WindowManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="PixelShader.hlsl">

@@ -1,4 +1,9 @@
-﻿  main.cpp
-F:\DOCUMENTS\d3d12book\MyDemos\Direct3D-12-Rendering\RenderingTest\main.cpp(781,19): warning C4244: '=' : conversion de 'int' en 'FLOAT', perte possible de données
-F:\DOCUMENTS\d3d12book\MyDemos\Direct3D-12-Rendering\RenderingTest\main.cpp(782,20): warning C4244: '=' : conversion de 'int' en 'FLOAT', perte possible de données
+﻿  GameLogic.cpp
+  Renderer.cpp
+F:\DOCUMENTS\d3d12book\MyDemos\Direct3D-12-Rendering\RenderingTest\Renderer.cpp(622,19): warning C4244: '=' : conversion de 'int' en 'FLOAT', perte possible de données
+F:\DOCUMENTS\d3d12book\MyDemos\Direct3D-12-Rendering\RenderingTest\Renderer.cpp(623,20): warning C4244: '=' : conversion de 'int' en 'FLOAT', perte possible de données
+  Transform.cpp
+  WindowManager.cpp
+  main.cpp
+  Génération de code en cours...
   RenderingTest.vcxproj -> F:\DOCUMENTS\d3d12book\MyDemos\Direct3D-12-Rendering\x64\Debug\RenderingTest.exe
