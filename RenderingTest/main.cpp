@@ -1,6 +1,12 @@
 #include "stdafx.h"
 #include "Transform.h"
 #include <Xinput.h>
+#include <chrono>
+
+using high_resolution_clock = std::chrono::high_resolution_clock;
+
+using time_point = std::chrono::high_resolution_clock::time_point;
+using duration = std::chrono::high_resolution_clock::duration;
 
 struct Vertex {
 	Vertex(float x, float y, float z, float r, float g, float b, float a) : pos(x, y, z), color(r, g, b, a) {}
@@ -12,12 +18,15 @@ float rotationAngleX = 0.0f;
 float rotationAngleY = 0.0f;
 float rotationAngleZ = 0.0f;
 
-float cameraMoveSpeed = 0.1f;
-float cameraRotationSpeed = 0.00000008f;
+float cameraMoveSpeed = 10.0f;
+float cameraRotationSpeed = 0.00005f;
 
 float xrot;
 float yrot;
 float zrot;
+
+time_point startTime = high_resolution_clock::now();
+time_point prevTime = startTime;
 
 Transform cameraTransform;
 
@@ -133,6 +142,14 @@ void mainloop() {
 
 	while (Running)
 	{
+		// Calculate delta time
+		time_point currentTime = high_resolution_clock::now();
+		duration deltaTime = currentTime - prevTime;
+		prevTime = currentTime;
+
+		// Convert delta time to seconds as a floating-point value
+		double deltaTimeSec = std::chrono::duration_cast<std::chrono::duration<double>>(deltaTime).count();
+
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 		{
 			if (msg.message == WM_QUIT)
@@ -143,7 +160,7 @@ void mainloop() {
 		}
 		else {
 			// run game code
-			Update(); // update the game logic
+			Update(deltaTimeSec); // update the game logic
 			Render(); // execute the command queue (rendering the scene is the result of the gpu executing the command lists)
 		}
 	}
@@ -808,32 +825,34 @@ bool InitD3D()
 	return true;
 }
 
-void Update()
+void Update(double deltaTimeSec)
 {
 	// update app logic, such as moving the camera or figuring out what objects are in view
 
 	// Handle user input for camera movement
 	if (GetAsyncKeyState('W') & 0x8000) {
-		cameraTransform.MoveRelative(0.0f, 0.0f, cameraMoveSpeed);
+		cameraTransform.MoveRelative(0.0f, 0.0f, static_cast<float>(deltaTimeSec) * cameraMoveSpeed);
 	}
 	if (GetAsyncKeyState('S') & 0x8000) {
-		cameraTransform.MoveRelative(0.0f, 0.0f, -cameraMoveSpeed);
+		cameraTransform.MoveRelative(0.0f, 0.0f, static_cast<float>(deltaTimeSec) * -cameraMoveSpeed);
 	}
 	if (GetAsyncKeyState('A') & 0x8000) {
-		cameraTransform.MoveRelative(-cameraMoveSpeed, 0.0f, 0.0f);
+		cameraTransform.MoveRelative(static_cast<float>(deltaTimeSec) * -cameraMoveSpeed, 0.0f, 0.0f);
 	}
 	if (GetAsyncKeyState('D') & 0x8000) {
-		cameraTransform.MoveRelative(cameraMoveSpeed, 0.0f, 0.0f);
+		cameraTransform.MoveRelative(static_cast<float>(deltaTimeSec) * cameraMoveSpeed, 0.0f, 0.0f);
 	}
 	if (GetAsyncKeyState(VK_LSHIFT) & 0x8000) {
-		cameraTransform.MoveRelative(0.0f, -cameraMoveSpeed, 0.0f);
+		cameraTransform.MoveRelative(0.0f, static_cast<float>(deltaTimeSec) * -cameraMoveSpeed, 0.0f);
 	}
 	if (GetAsyncKeyState(VK_SPACE) & 0x8000) {
-		cameraTransform.MoveRelative(0.0f, cameraMoveSpeed, 0.0f);
+		cameraTransform.MoveRelative(0.0f, static_cast<float>(deltaTimeSec) * cameraMoveSpeed, 0.0f);
 	}
 
-	rotationAngleY += cameraRotationSpeed * static_cast<float>(GetAsyncKeyState(VK_RIGHT) & 0x8001) - cameraRotationSpeed * static_cast<float>(GetAsyncKeyState(VK_LEFT) & 0x8001);
-	rotationAngleX += cameraRotationSpeed * static_cast<float>(GetAsyncKeyState(VK_DOWN) & 0x8001) - cameraRotationSpeed * static_cast<float>(GetAsyncKeyState(VK_UP) & 0x8001);
+	rotationAngleY += static_cast<float>(deltaTimeSec) * cameraRotationSpeed * static_cast<float>(GetAsyncKeyState(VK_RIGHT) & 0x8001) - 
+		static_cast<float>(deltaTimeSec) * cameraRotationSpeed * static_cast<float>(GetAsyncKeyState(VK_LEFT) & 0x8001);
+	rotationAngleX += static_cast<float>(deltaTimeSec) * cameraRotationSpeed * static_cast<float>(GetAsyncKeyState(VK_DOWN) & 0x8001) - 
+		static_cast<float>(deltaTimeSec) * cameraRotationSpeed * static_cast<float>(GetAsyncKeyState(VK_UP) & 0x8001);
 
 	cameraTransform.SetRotation(rotationAngleX, rotationAngleY, 0.0f);
 
@@ -846,9 +865,9 @@ void Update()
 	XMStoreFloat4x4(&cameraViewMat, viewMat1);
 
 	// Increment rotation angles over time
-	xrot += 0.0001f;
-	yrot += 0.0001f;
-	zrot += 0.0001f;
+	xrot += static_cast<float>(deltaTimeSec) * 0.1f;
+	yrot += static_cast<float>(deltaTimeSec) * 0.1f;
+	zrot += static_cast<float>(deltaTimeSec) * 0.1f;
 
 	// create rotation matrices
 	//XMMATRIX rotXMat = XMMatrixRotationX(rotationAngleX);

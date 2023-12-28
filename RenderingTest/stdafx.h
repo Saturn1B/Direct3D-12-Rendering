@@ -81,7 +81,7 @@ int rtvDescriptorSize; // size of the rtv descriptor on the device (all front an
 
 bool InitD3D(); // initializes direct3d 12
 
-void Update(); // update the game logic
+void Update(double deltaTimeSec); // update the game logic
 
 void UpdatePipeline(); // update the direct3d pipeline (update command lists)
 
