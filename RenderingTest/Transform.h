@@ -15,7 +15,7 @@ public:
     void SetRotation(float pitch, float yaw, float roll);
     void SetScale(float scaleX, float scaleY, float scaleZ);
 
-    XMMATRIX GetWorldMatrix();
+    XMMATRIX GetWorldMatrix() const;
 
     XMVECTOR GetUpVector() const;
     XMVECTOR GetForwardVector() const;

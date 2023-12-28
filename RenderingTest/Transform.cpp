@@ -35,7 +35,7 @@ void Transform::SetScale(float scaleX, float scaleY, float scaleZ)
     scale = XMFLOAT3(scaleX, scaleY, scaleZ);
 }
 
-XMMATRIX Transform::GetWorldMatrix()
+XMMATRIX Transform::GetWorldMatrix() const
 {
     XMMATRIX translationMat = XMMatrixTranslationFromVector(XMLoadFloat3(&position));
     XMMATRIX rotationMat = XMMatrixRotationRollPitchYawFromVector(XMLoadFloat3(&rotation));

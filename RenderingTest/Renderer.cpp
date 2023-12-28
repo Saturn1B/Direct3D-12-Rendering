@@ -816,3 +816,34 @@ void Cleanup()
 		SAFE_RELEASE(constantBufferUploadHeaps[i]);
 	};
 }
+
+void UpdateViewMatrix(const Transform& cameraTransform) {
+	// Update camera view matrix logic
+	XMVECTOR cPos = cameraTransform.GetPosition();
+	XMVECTOR cForward = cameraTransform.GetForwardVector();
+	XMVECTOR cUp = cameraTransform.GetUpVector();
+	XMVECTOR cTarg = cPos + cForward;
+	XMMATRIX viewMat = XMMatrixLookAtLH(cPos, cTarg, cUp);
+	XMStoreFloat4x4(&cameraViewMat, viewMat);
+}
+
+void UpdateObjectTransform(const Transform& objectTransform) {
+	// Update object's world matrix logic
+	XMMATRIX worldMat = objectTransform.GetWorldMatrix();
+	XMStoreFloat4x4(&cube1WorldMat, worldMat);
+}
+
+void UpdateConstantBuffer() {
+	// Update constant buffer logic
+	// This includes copying the data to the GPU, mapping resources, etc.
+
+	// Create the wvp matrix and store in constant buffer
+	XMMATRIX viewMat = XMLoadFloat4x4(&cameraViewMat); // load view matrix
+	XMMATRIX projMat = XMLoadFloat4x4(&cameraProjMat); // load projection matrix
+	XMMATRIX wvpMat = XMLoadFloat4x4(&cube1WorldMat) * viewMat * projMat; // create wvp matrix
+	XMMATRIX transposed = XMMatrixTranspose(wvpMat); // must transpose wvp matrix for the GPU
+	XMStoreFloat4x4(&cbPerObject.wvpMat, transposed); // store transposed wvp matrix in constant buffer
+
+	// Copy our ConstantBuffer instance to the mapped constant buffer resource
+	memcpy(cbvGPUAddress[frameIndex], &cbPerObject, sizeof(cbPerObject));
+}

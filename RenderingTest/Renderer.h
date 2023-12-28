@@ -47,6 +47,10 @@ extern int rtvDescriptorSize; // size of the rtv descriptor on the device (all f
 
 bool InitD3D(); // initializes direct3d 12
 
+void UpdateViewMatrix(const Transform& cameraTransform);
+void UpdateObjectTransform(const Transform& objectTransform);
+void UpdateConstantBuffer();
+
 void UpdatePipeline(); // update the direct3d pipeline (update command lists)
 
 void Render(); // execute the command list

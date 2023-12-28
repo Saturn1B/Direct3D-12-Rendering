@@ -54,14 +54,6 @@ void Update(double deltaTimeSec)
 
 	cameraTransform.SetRotation(rotationAngleX, rotationAngleY, 0.0f);
 
-	// Update camera view matrix
-	XMVECTOR cPos = cameraTransform.GetPosition();
-	XMVECTOR cForward = cameraTransform.GetForwardVector();
-	XMVECTOR cUp = cameraTransform.GetUpVector();
-	XMVECTOR cTarg = cPos + cForward;
-	XMMATRIX viewMat1 = XMMatrixLookAtLH(cPos, cTarg, cUp);
-	XMStoreFloat4x4(&cameraViewMat, viewMat1);
-
 	// Increment rotation angles over time
 	xrot += static_cast<float>(deltaTimeSec) * 0.1f;
 	yrot += static_cast<float>(deltaTimeSec) * 0.1f;
@@ -73,20 +65,7 @@ void Update(double deltaTimeSec)
 	cube1Transform.SetPosition(cube1Position.x, cube1Position.y, 5 + zrot);
 	//cube1Transform.SetScale(rotationAngleX, rotationAngleY, rotationAngleZ);
 
-	// Get the world matrix from the Transform class
-	XMMATRIX worldMat = cube1Transform.GetWorldMatrix();
-
-	// store cube1's world matrix
-	XMStoreFloat4x4(&cube1WorldMat, worldMat);
-
-	// update constant buffer for cube1
-	// create the wvp matrix and store in constant buffer
-	XMMATRIX viewMat = XMLoadFloat4x4(&cameraViewMat); // load view matrix
-	XMMATRIX projMat = XMLoadFloat4x4(&cameraProjMat); // load projection matrix
-	XMMATRIX wvpMat = XMLoadFloat4x4(&cube1WorldMat) * viewMat * projMat; // create wvp matrix
-	XMMATRIX transposed = XMMatrixTranspose(wvpMat); // must transpose wvp matrix for the gpu
-	XMStoreFloat4x4(&cbPerObject.wvpMat, transposed); // store transposed wvp matrix in constant buffer
-
-													  // copy our ConstantBuffer instance to the mapped constant buffer resource
-	memcpy(cbvGPUAddress[frameIndex], &cbPerObject, sizeof(cbPerObject));
+	UpdateViewMatrix(cameraTransform);
+	UpdateObjectTransform(cube1Transform);
+	UpdateConstantBuffer();
 }
