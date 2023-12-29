@@ -263,13 +263,6 @@ bool InitD3D()
 
 	// create vertex and pixel shaders
 
-	// when debugging, we can compile the shader files at runtime.
-	// but for release versions, we can compile the hlsl shaders
-	// with fxc.exe to create .cso files, which contain the shader
-	// bytecode. We can load the .cso files at runtime to get the
-	// shader bytecode, which of course is faster than compiling
-	// them at runtime
-
 	// compile vertex shader
 	ID3DBlob* vertexShader; // d3d blob for holding vertex shader bytecode
 	ID3DBlob* errorBuff; // a buffer holding the error data if any
@@ -318,9 +311,6 @@ bool InitD3D()
 
 	// create input layout
 
-	// The input layout is used by the Input Assembler so that it knows
-	// how to read the vertex data bound to it.
-
 	D3D12_INPUT_ELEMENT_DESC inputLayout[] =
 	{
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
@@ -335,16 +325,6 @@ bool InitD3D()
 	inputLayoutDesc.pInputElementDescs = inputLayout;
 
 	// create a pipeline state object (PSO)
-
-	// In a real application, you will have many pso's. for each different shader
-	// or different combinations of shaders, different blend states or different rasterizer states,
-	// different topology types (point, line, triangle, patch), or a different number
-	// of render targets you will need a pso
-
-	// VS is the only required shader for a pso. You might be wondering when a case would be where
-	// you only set the VS. It's possible that you have a pso that only outputs data with the stream
-	// output, and not on a render target, which means you would not need anything after the stream
-	// output.
 
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {}; // a structure to define a pso
 	psoDesc.InputLayout = inputLayoutDesc; // the structure describing our input layout
@@ -411,9 +391,7 @@ bool InitD3D()
 	int vBufferSize = sizeof(vList);
 
 	// create default heap
-	// default heap is memory on the GPU. Only the GPU has access to this memory
-	// To get data into this heap, we will have to upload the data using
-	// an upload heap
+
 	device->CreateCommittedResource(
 		&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), // a default heap
 		D3D12_HEAP_FLAG_NONE, // no flags
@@ -427,8 +405,7 @@ bool InitD3D()
 	vertexBuffer->SetName(L"Vertex Buffer Resource Heap");
 
 	// create upload heap
-	// upload heaps are used to upload data to the GPU. CPU can write to it, GPU can read from it
-	// We will upload the vertex buffer using this heap to the default heap
+
 	ID3D12Resource* vBufferUploadHeap;
 	device->CreateCommittedResource(
 		&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD), // upload heap
@@ -557,19 +534,7 @@ bool InitD3D()
 	device->CreateDepthStencilView(depthStencilBuffer, &depthStencilDesc, dsDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
 
 	// create the constant buffer resource heap
-	// We will update the constant buffer one or more times per frame, so we will use only an upload heap
-	// unlike previously we used an upload heap to upload the vertex and index data, and then copied over
-	// to a default heap. If you plan to use a resource for more than a couple frames, it is usually more
-	// efficient to copy to a default heap where it stays on the gpu. In this case, our constant buffer
-	// will be modified and uploaded at least once per frame, so we only use an upload heap
 
-	// first we will create a resource heap (upload heap) for each frame for the cubes constant buffers
-	// As you can see, we are allocating 64KB for each resource we create. Buffer resource heaps must be
-	// an alignment of 64KB. We are creating 3 resources, one for each frame. Each constant buffer is 
-	// only a 4x4 matrix of floats in this tutorial. So with a float being 4 bytes, we have 
-	// 16 floats in one constant buffer, and we will store 2 constant buffers in each
-	// heap, one for each cube, thats only 64x2 bits, or 128 bits we are using for each
-	// resource, and each resource must be at least 64KB (65536 bits)
 	for (int i = 0; i < frameBufferCount; ++i)
 	{
 		// create resource for cube 1
@@ -589,8 +554,6 @@ bool InitD3D()
 										// map the resource heap to get a gpu virtual address to the beginning of the heap
 		hr = constantBufferUploadHeaps[i]->Map(0, &readRange, reinterpret_cast<void**>(&cbvGPUAddress[i]));
 
-		// Because of the constant read alignment requirements, constant buffer views must be 256 bit aligned. Our buffers are smaller than 256 bits,
-		// so we need to add spacing between the two buffers, so that the second buffer starts at 256 bits from the beginning of the resource heap.
 		memcpy(cbvGPUAddress[i], &cbPerObject, sizeof(cbPerObject)); // cube1's constant buffer data
 	}
 
@@ -641,7 +604,6 @@ bool InitD3D()
 	cameraTransform.SetRotation(0.0f, 0.0f, 0.0f);
 
 	// set starting cubes position using Transform class
-	// first cube
 	Transform cube1Transform;
 	cube1Transform.SetPosition(0.0f, 0.0f, 0.0f);
 

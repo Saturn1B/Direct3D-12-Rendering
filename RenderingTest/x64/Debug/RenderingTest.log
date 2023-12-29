@@ -1,2 +1,6 @@
-﻿  WindowManager.cpp
+﻿  Renderer.cpp
+F:\DOCUMENTS\d3d12book\MyDemos\Direct3D-12-Rendering\RenderingTest\Renderer.cpp(586,19): warning C4244: '=' : conversion de 'int' en 'FLOAT', perte possible de données
+F:\DOCUMENTS\d3d12book\MyDemos\Direct3D-12-Rendering\RenderingTest\Renderer.cpp(587,20): warning C4244: '=' : conversion de 'int' en 'FLOAT', perte possible de données
+  Transform.cpp
+  Génération de code en cours...
   RenderingTest.vcxproj -> F:\DOCUMENTS\d3d12book\MyDemos\Direct3D-12-Rendering\x64\Debug\RenderingTest.exe
