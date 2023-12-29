@@ -635,34 +635,19 @@ bool InitD3D()
 	XMMATRIX tmpMat = XMMatrixPerspectiveFovLH(45.0f * (3.14f / 180.0f), (float)Width / (float)Height, 0.1f, 1000.0f);
 	XMStoreFloat4x4(&cameraProjMat, tmpMat);
 
-	// set starting camera state
-	//cameraPosition = XMFLOAT4(0.0f, 2.0f, -4.0f, 0.0f);
-	//cameraTarget = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
-	//cameraUp = XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f);
-
 	// set starting camera state using Transform class
 	Transform cameraTransform;
 	cameraTransform.SetPosition(0.0f, 2.0f, -4.0f);
 	cameraTransform.SetRotation(0.0f, 0.0f, 0.0f);
-
-	// build view matrix
-	//XMVECTOR cPos = XMLoadFloat4(&cameraPosition);
-	//XMVECTOR cTarg = XMLoadFloat4(&cameraTarget);
-	//XMVECTOR cUp = XMLoadFloat4(&cameraUp);
-	//tmpMat = XMMatrixLookAtLH(cPos, cTarg, cUp);
-	XMVECTOR cPos = cameraTransform.GetPositionXM();
-	XMVECTOR cTarg = cameraTransform.GetForwardVector();
-	XMVECTOR cUp = cameraTransform.GetUpVector();
-	tmpMat = XMMatrixLookAtLH(cPos, cPos + cTarg, cUp);
-	XMStoreFloat4x4(&cameraViewMat, tmpMat);
 
 	// set starting cubes position using Transform class
 	// first cube
 	Transform cube1Transform;
 	cube1Transform.SetPosition(0.0f, 0.0f, 0.0f);
 
-	// Get the world matrix from the Transform class
-	XMMATRIX cube1WorldMat = cube1Transform.GetWorldMatrix();
+	UpdateViewMatrix(cameraTransform);
+	UpdateObjectTransform(cube1Transform);
+	UpdateConstantBuffer();
 
 	return true;
 }

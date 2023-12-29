@@ -58,8 +58,8 @@ void Update(double deltaTimeSec)
 	// Update cube1's transformation using Transform class
 	Transform cube1Transform;
 	cube1Transform.SetRotation(xrot, yrot, zrot);
-	cube1Transform.SetPosition(cube1Transform.GetPosition().x, cube1Transform.GetPosition().y, 5 + zrot);
-	//cube1Transform.SetScale(rotationAngleX, rotationAngleY, rotationAngleZ);
+	cube1Transform.SetPosition(cube1Transform.GetPosition().x, cube1Transform.GetPosition().y, 5 + zrot * 5);
+	//cube1Transform.SetScale(xrot, yrot, zrot);
 
 	UpdateViewMatrix(cameraTransform);
 	UpdateObjectTransform(cube1Transform);
