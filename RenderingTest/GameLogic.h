@@ -34,7 +34,3 @@ extern time_point startTime;
 extern time_point prevTime;
 
 void Update(double deltaTimeSec); // update the game logic
-
-extern XMFLOAT4X4 cube1WorldMat; // our first cubes world matrix (transformation matrix)
-extern XMFLOAT4X4 cube1RotMat; // this will keep track of our rotation for the first cube
-extern XMFLOAT4 cube1Position; // our first cubes position in space

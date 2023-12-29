@@ -32,6 +32,7 @@ UINT8* cbvGPUAddress[frameBufferCount] = { nullptr };
 
 XMFLOAT4X4 cameraProjMat;
 XMFLOAT4X4 cameraViewMat;
+XMFLOAT4X4 objectWorldMat;
 
 int numCubeIndices;
 
@@ -649,7 +650,7 @@ bool InitD3D()
 	//XMVECTOR cTarg = XMLoadFloat4(&cameraTarget);
 	//XMVECTOR cUp = XMLoadFloat4(&cameraUp);
 	//tmpMat = XMMatrixLookAtLH(cPos, cTarg, cUp);
-	XMVECTOR cPos = cameraTransform.GetPosition();
+	XMVECTOR cPos = cameraTransform.GetPositionXM();
 	XMVECTOR cTarg = cameraTransform.GetForwardVector();
 	XMVECTOR cUp = cameraTransform.GetUpVector();
 	tmpMat = XMMatrixLookAtLH(cPos, cPos + cTarg, cUp);
@@ -819,7 +820,7 @@ void Cleanup()
 
 void UpdateViewMatrix(const Transform& cameraTransform) {
 	// Update camera view matrix logic
-	XMVECTOR cPos = cameraTransform.GetPosition();
+	XMVECTOR cPos = cameraTransform.GetPositionXM();
 	XMVECTOR cForward = cameraTransform.GetForwardVector();
 	XMVECTOR cUp = cameraTransform.GetUpVector();
 	XMVECTOR cTarg = cPos + cForward;
@@ -830,7 +831,7 @@ void UpdateViewMatrix(const Transform& cameraTransform) {
 void UpdateObjectTransform(const Transform& objectTransform) {
 	// Update object's world matrix logic
 	XMMATRIX worldMat = objectTransform.GetWorldMatrix();
-	XMStoreFloat4x4(&cube1WorldMat, worldMat);
+	XMStoreFloat4x4(&objectWorldMat, worldMat);
 }
 
 void UpdateConstantBuffer() {
@@ -840,7 +841,7 @@ void UpdateConstantBuffer() {
 	// Create the wvp matrix and store in constant buffer
 	XMMATRIX viewMat = XMLoadFloat4x4(&cameraViewMat); // load view matrix
 	XMMATRIX projMat = XMLoadFloat4x4(&cameraProjMat); // load projection matrix
-	XMMATRIX wvpMat = XMLoadFloat4x4(&cube1WorldMat) * viewMat * projMat; // create wvp matrix
+	XMMATRIX wvpMat = XMLoadFloat4x4(&objectWorldMat) * viewMat * projMat; // create wvp matrix
 	XMMATRIX transposed = XMMatrixTranspose(wvpMat); // must transpose wvp matrix for the GPU
 	XMStoreFloat4x4(&cbPerObject.wvpMat, transposed); // store transposed wvp matrix in constant buffer
 

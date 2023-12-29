@@ -21,9 +21,13 @@ public:
     XMVECTOR GetForwardVector() const;
     XMVECTOR GetRightVector() const;
 
-    XMVECTOR GetPosition() const;
-    XMVECTOR GetRotation() const;
-    XMVECTOR GetScale() const;
+    XMVECTOR GetPositionXM() const;
+    XMVECTOR GetRotationXM() const;
+    XMVECTOR GetScaleXM() const;
+
+    XMFLOAT3  GetPosition() const;
+    XMFLOAT3  GetRotation() const;
+    XMFLOAT3  GetScale() const;
 
 private:
     XMFLOAT3 position;

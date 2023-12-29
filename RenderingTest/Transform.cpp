@@ -17,7 +17,7 @@ void Transform::MoveRelative(float dx, float dy, float dz) {
     movement = XMVector3Rotate(movement, GetRotationQuaternion());
 
     // Update the position
-    XMStoreFloat3(&position, XMVectorAdd(GetPosition(), movement));
+    XMStoreFloat3(&position, XMVectorAdd(GetPositionXM(), movement));
 }
 
 void Transform::SetPosition(float x, float y, float z)
@@ -59,19 +59,34 @@ XMVECTOR Transform::GetRightVector() const
     return XMVector3Rotate(XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f), GetRotationQuaternion());
 }
 
-XMVECTOR Transform::GetPosition() const
+XMVECTOR Transform::GetPositionXM() const
 {
     return XMLoadFloat3(&position);
 }
 
-XMVECTOR Transform::GetRotation() const
+XMVECTOR Transform::GetRotationXM() const
 {
     return XMLoadFloat3(&rotation);
 }
 
-XMVECTOR Transform::GetScale() const
+XMVECTOR Transform::GetScaleXM() const
 {
     return XMLoadFloat3(&scale);
+}
+
+XMFLOAT3 Transform::GetPosition() const
+{
+    return position;
+}
+
+XMFLOAT3 Transform::GetRotation() const
+{
+    return rotation;
+}
+
+XMFLOAT3 Transform::GetScale() const
+{
+    return scale;
 }
 
 XMVECTOR Transform::GetRotationQuaternion() const {

@@ -101,4 +101,6 @@ extern UINT8* cbvGPUAddress[]; // this is a pointer to each of the constant buff
 extern XMFLOAT4X4 cameraProjMat; // this will store our projection matrix
 extern XMFLOAT4X4 cameraViewMat; // this will store our view matrix
 
+extern XMFLOAT4X4 objectWorldMat;
+
 extern int numCubeIndices; // the number of indices to draw the cube

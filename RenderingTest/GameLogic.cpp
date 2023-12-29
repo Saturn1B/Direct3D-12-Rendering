@@ -17,10 +17,6 @@ float zrot = 0.0f;
 
 bool Running = true;
 
-XMFLOAT4X4 cube1WorldMat;
-XMFLOAT4X4 cube1RotMat;
-XMFLOAT4 cube1Position;
-
 #pragma endregion
 
 void Update(double deltaTimeSec)
@@ -62,7 +58,7 @@ void Update(double deltaTimeSec)
 	// Update cube1's transformation using Transform class
 	Transform cube1Transform;
 	cube1Transform.SetRotation(xrot, yrot, zrot);
-	cube1Transform.SetPosition(cube1Position.x, cube1Position.y, 5 + zrot);
+	cube1Transform.SetPosition(cube1Transform.GetPosition().x, cube1Transform.GetPosition().y, 5 + zrot);
 	//cube1Transform.SetScale(rotationAngleX, rotationAngleY, rotationAngleZ);
 
 	UpdateViewMatrix(cameraTransform);
