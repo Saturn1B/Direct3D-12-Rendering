@@ -3,8 +3,8 @@
 #pragma region VariableInitialization
 
 HWND hwnd = NULL;
-LPCTSTR WindowName = L"BzTutsApp";
-LPCTSTR WindowTitle = L"Bz Window";
+LPCTSTR WindowName = L"Direct3D 12 Rendering";
+LPCTSTR WindowTitle = L"Direct3D 12 Rendering Window";
 int Width = 800;
 int Height = 600;
 bool FullScreen = false;
